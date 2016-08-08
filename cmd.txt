@@ -2,3 +2,13 @@
 
 #
 mongod --config /usr/local/etc/mongod.conf
+
+## mongo sql
+#
+db.yourCollection.remove({})
+db.yourCollection.find()
+
+# 
+show dbs
+use yourDbName
+show collections
