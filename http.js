@@ -24,7 +24,7 @@ var DBURL = 'mongodb://localhost:27017/msgfri';
 MongoClient.connect(DBURL, function(err, db) {
   	assert.equal(null, err);
   	console.log("Connected correctly to server");
-  	//findDocuments(db, function() { db.close(); });
+  	findDocuments(db, function(docs) { db.close(); });
 });
 
 function index(request, response){
@@ -55,11 +55,11 @@ var findDocuments = function(db, callback) {
 }
 
 
-var insertDocuments = function(db, body, callback) {
+var insertDocuments = function(db, req, callback) {
   	// Get the documents collection
  	var collection = db.collection('msg');
   	// Insert some documents
-  	collection.insertMany([body], function(err, result) {
+  	collection.insertMany([req.body], function(err, result) {
     	assert.equal(err, null);
     	callback(result);
   });
@@ -80,30 +80,23 @@ app.get('/feed', function(req,res){
 			res.type('application/json');
 			res.write(JSON.stringify({"msgs":docs}));
 			res.end();
-			//res.end("--END--");
 	   	});
 	});
-
-	//res.write('--START--');
 });
 
 app.post('/feed', function(req,res){
-	console.log(req.body); //req.query
+	console.log(req.body);
 	
 	MongoClient.connect(DBURL, function(err, db) {
 	  	assert.equal(null, err);
-	  	insertDocuments(db, req.body, function(docs) {
+	  	insertDocuments(db, req, function(docs) {
 			db.close();
 			res.type('application/json');
 			res.write(JSON.stringify({"event": "success"}));
 			res.end();
-			//res.end("--END--");
 	   	});
 	});
-
-	//res.write('--START--');
 });
 
 
 app.listen(PORT);
-
